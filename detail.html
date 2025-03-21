@@ -1,0 +1,42 @@
+{% extends "blog/base.html" %}
+{% load blog_tags %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+<h1>{{ post.title }}</h1> <h3> <a href ='{% url "blog:post_list_fbv" %}' style ="color:red;"> Home </a></h3>
+<p class="date">
+Published {{ post.publish }} by {{ post.author }}
+</p>
+{{ post.body|markdown_format }}
+<p class="tags">
+            Tags :
+            {% for tag in post.tags.all %}
+                <a href ='{% url "blog:post_list_by_tag" tag.slug %}' style ="color:green;" >{{tag.name}} </a>{% if not forloop.last %} , {% endif %}
+            {% endfor %}
+        </p>
+<p>
+<a href="{% url 'blog:post_share' post.id %}"> Share this post</a>
+</p>
+    <h3>Similar posts</h3>
+    {% for post in similar_posts %}
+        <P><a href="{{post.get_absolute_url}}">{{ post.title }}</a></P>
+    {%empty%}
+        There are no similar posts
+    {% endfor %}
+
+
+{% with comments.count as total_comments %}
+</h2>
+{% endwith %}
+{% for comment in comments %}
+<div class="comment">
+<p class="info">
+Comment {{ forloop.counter }} by {{ comment.name }}
+{{ comment.created }}
+</p>
+{{ comment.body|linebreaks }}
+</div>
+{% empty %}
+<p>There are no comments.</p>
+{% endfor %}
+{% include "blog/post/includes/comment_form.html" %}
+{% endblock %}
